@@ -1,12 +1,22 @@
 import telebot
+import os
 
-# Yangi va to'liq tokeningiz shu yerga tushdi
-TOKEN = "8840928379:AAEe_p1_xbPGcnSbvnRK_7n_oxbXSPMtM9k"
-bot = telebot.TeleBot(TOKEN)
+BOT_TOKEN = os.environ.get('BOT_TOKEN')
+bot = telebot.TeleBot(BOT_TOKEN)
 
-@bot.message_handler(commands=['start'])
-def start_message(message):
-    bot.reply_to(message, "Salom! Kinobot muvaffaqiyatli ishga tushdi!")
+# Bu funksiya siz yuborgan videoni ushlab, uning ID-sini aniqlaydi
+@bot.message_handler(content_types=['video'])
+def get_video_id(message):
+    video_id = message.video.file_id
+    
+    # ID kodini sizga xabar qilib qaytaradi
+    bot.send_message(
+        message.chat.id, 
+        f"Kino qabul qilindi! ✅\n\n"
+        f"Mana uning File ID kodi (shuni nusxalab olasiz):\n\n"
+        f"`{video_id}`", 
+        parse_mode="Markdown"
+    )
 
-# Botni tinimsiz ishlatish buyrug'i
-bot.infinity_polling()
+bot.polling(none_stop=True)
+
